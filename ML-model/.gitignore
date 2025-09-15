@@ -1,0 +1,61 @@
+# IDE Configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Virtual Environments
+venv/
+yolovenv/
+env/
+ENV/
+.env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Video Files
+# *.mp4
+# *.avi
+# *.mov
+# *.mkv
+# *.wmv
+# *.flv
+# *.webm
+# traffic_video*
+
+# Large Model Files (uncomment if your model files are too large)
+# *.pt
+# *.pth
+# *.h5
+# *.pkl
+# traffic_yolov8.p
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Output directories
+output/
+results/
+runs/
+
+# Temporary files
+*.tmp
+*.temp
