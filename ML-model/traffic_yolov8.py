@@ -6,8 +6,8 @@ import cv2
 from ultralytics import YOLO
 
 # -------------------- CONFIG --------------------
-MAX_EXPECTED_VEHICLES = 50  # adjust based on road capacity
-VIDEO_FILENAME = "traffic_video2.mp4"
+MAX_EXPECTED_VEHICLES = 22  # adjust based on road capacity
+VIDEO_FILENAME = "traffic_video4.mp4"
 vehicle_classes = [2, 3, 5, 7]  # car, motorcycle, bus, truck
 total_30s_count = 0  # sum of avg_count for the last 30 seconds
 seconds_elapsed = 0
@@ -67,7 +67,7 @@ def generate_frames_and_counts():
             total_30s_count += avg_count
             seconds_elapsed += 1
 
-            congestion_index = min(round(total_30s_count / MAX_EXPECTED_VEHICLES * 100), 100)
+            congestion_index = min(round(avg_count / MAX_EXPECTED_VEHICLES * 100), 100)
             suggestion = (
                 "Heavy traffic, set the signal green " if congestion_index > 80 else
                 "Moderate traffic, may experience delays" if congestion_index > 50 else

@@ -2,9 +2,11 @@ import React from 'react'
 import Header from './components/Header'
 import Sidebar from './components/sideBar'
 import Alerts from './components/Alerts'
+import Resource from './components/Resource'
 export default function HomePage() {
   const userName = localStorage.getItem("name") || "Guest";
 
+  
   return (
     <div className='flex items-center h-screen gap-20 pr-10'>
       <div>
@@ -19,9 +21,7 @@ export default function HomePage() {
         <div className="grid grid-cols-12  gap-6">
           {/* Congestion Statistics */}
           <div className="col-span-5 bg-[#0B1E56] rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-6">CONGESTION STATISTICS</h2>
-            <div className="flex items-end justify-center space-x-4 h-40">
-            </div>
+           <Resource />
           </div>
 
           {/* Alerts */}
@@ -31,54 +31,6 @@ export default function HomePage() {
               <Alerts />
             </div>
           </div>
-
-          {/* Direct Links */}
-          <div className="col-span-4 bg-[#0B1E56] rounded-lg p-6 border-2 border-blue-500">
-            <h2 className="text-xl font-semibold mb-6">Direct Links</h2>
-            <div className="space-y-4">
-              <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
-                <div className="w-6 h-6 border-2 border-white rounded flex items-center justify-center">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                </div>
-                <span>Adjust Signals</span>
-              </button>
-              
-              <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
-                <span>Vehicle Details</span>
-              </button>
-              
-              <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
-  
-                <span>Accident</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Notifications */}
-          <div className="col-span-4 bg-[#0B1E56] rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-6">NOTIFICATIONS</h2>
-            <div className="space-y-3">
-              <div className="bg-[#D9D9D9] text-black rounded-lg p-3">
-                <span className="text-sm">IG,Traffic Press Conference at 15:00</span>
-              </div>
-              <div className="bg-[#D9D9D9] text-black rounded-lg p-3">
-                <span className="text-sm">Clear MG Road for CM Convoy</span>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
-                Challan
-              </button>
-              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
-                Complaints
-              </button>
-              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
-                Map
-              </button>
-            </div>
-          </div>
-
           {/* Contact Details */}
           <div className="col-span-4 bg-[#0B1E56] rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6">Contact Details</h2>
@@ -109,6 +61,55 @@ export default function HomePage() {
                 </div>
                 <span className="text-sm font-medium">Ambulance</span>
               </div>
+            </div>
+          </div>   {/* closing tag */}
+          
+
+          {/* Notifications */}
+          <div className="col-span-4 bg-[#0B1E56] rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-6">NOTIFICATIONS</h2>
+            <div className="space-y-3">
+              <div className="bg-[#D9D9D9] text-black rounded-lg p-3">
+                <span className="text-sm">IG,Traffic Press Conference at 15:00</span>
+              </div>
+              <div className="bg-[#D9D9D9] text-black rounded-lg p-3">
+                <span className="text-sm">Clear MG Road for CM Convoy</span>
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
+                Challan
+              </button>
+              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
+                Complaints
+              </button>
+              <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg">
+                Map
+              </button>
+            </div>
+          </div>
+
+          
+          {/* Direct Links */}
+          <div className="col-span-4 bg-[#0B1E56] rounded-lg p-6  ">
+            <h2 className="text-xl font-semibold mb-6">Direct Links</h2>
+            <div className="space-y-4">
+              <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
+                <div className="w-6 h-6 border-2 border-white rounded flex items-center justify-center">
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <span>Adjust Signals</span>
+              </button>
+              
+              <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
+                <span>Vehicle Details</span>
+              </button>
+              
+              <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg flex items-center justify-center space-x-2">
+  
+                <span>Accident</span>
+              </button>
             </div>
           </div>
         </div>
