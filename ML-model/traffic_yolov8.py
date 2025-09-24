@@ -93,18 +93,20 @@ def generate_frames_and_counts():
         _, buffer = cv2.imencode('.jpg', frame)
         latest_frame = buffer.tobytes()
 
+        time.sleep(0.06)
+
 def video_stream_generator():
     while True:
         if latest_frame:  # only send if we already have a frame
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + latest_frame + b'\r\n')
-        time.sleep(0.03)  # ~30 fps
+        time.sleep(0.1)  # ~30 fps
    
 
 # -------------------- BACKGROUND THREAD --------------------
 def process_video_background():
-    for _ in generate_frames_and_counts():
-        time.sleep(0.001)  # tiny sleep to reduce CPU usage
+    generate_frames_and_counts()
+
 
 threading.Thread(target=process_video_background, daemon=True).start()
 
@@ -114,7 +116,8 @@ def video_stream():
     """MJPEG video stream with bounding boxes"""
     return StreamingResponse(
         video_stream_generator(),
-        media_type='multipart/x-mixed-replace; boundary=frame'
+        media_type='multipart/x-mixed-replace; boundary=frame',
+         headers={"Cache-Control": "no-cache", "Pragma": "no-cache"}
     )
 
 @app.get("/vehicle_counts")
