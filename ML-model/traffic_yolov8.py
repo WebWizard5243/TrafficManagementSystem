@@ -112,7 +112,7 @@ threading.Thread(target=process_video_background, daemon=True).start()
 
 # -------------------- ENDPOINTS --------------------
 @app.get("/video_stream")
-def video_stream():
+async def video_stream():
     """MJPEG video stream with bounding boxes"""
     return StreamingResponse(
         video_stream_generator(),

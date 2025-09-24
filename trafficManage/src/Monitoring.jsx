@@ -35,7 +35,7 @@ const latest16 = [...counts].reverse().find(item => item.second % 1 === 0);
           {/* Map Section */}
           <div className="col-span-2 row-span-1 rounded-xl p-4">
               <div className="bg-slate-300 rounded-lg aspect-video flex items-center justify-center">
-                <span className="text-4xl font-bold text-slate-800"><img  className='w-full h-full object-contain' src="/video_stream"></img></span>
+                <span className="text-4xl font-bold text-slate-800"><img  className='w-full h-full object-contain' src="http:localhost:3000/video_stream"></img></span>
               </div>
             </div>
 
