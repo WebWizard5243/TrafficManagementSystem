@@ -11,7 +11,7 @@ const latest16 = [...counts].reverse().find(item => item.second % 1 === 0);
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://localhost:3000/detect");
+        const res = await fetch("https://trafficmanagementsystem-i8o2.onrender.com/detect");
         const data = await res.json();
         setCounts(data);
       } catch (error) {

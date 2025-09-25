@@ -10,19 +10,24 @@ import dns from "dns"
 dns.setDefaultResultOrder('ipv4first');
 dotenv.config();
 
-const connectionUrl = new URL(process.env.SUPABASE_CONNECTION_STRING);
+const { Pool } = pg;
 
-const db = new pg.Client({
-  host: connectionUrl.hostname,
-  port: connectionUrl.port || 5432,
-  database: connectionUrl.pathname.slice(1), // Remove leading slash
-  user: connectionUrl.username,
-  password: connectionUrl.password,
-  ssl: { rejectUnauthorized: false },
-  family: 4  // This forces IPv4 - moved to root level
+const db = new Pool({
+  connectionString: process.env.SUPABASE_CONNECTION_STRING,
+  ssl: { 
+    rejectUnauthorized: false 
+  },
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
-db.connect().catch(err => {
+// Test the connection
+db.on('connect', () => {
+  console.log('Database connected successfully');
+});
+
+db.on('error', (err) => {
   console.error('Database connection error:', err);
 });
 
