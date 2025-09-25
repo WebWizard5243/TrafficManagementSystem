@@ -100,7 +100,7 @@ def video_stream_generator():
         if latest_frame:  # only send if we already have a frame
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + latest_frame + b'\r\n')
-        time.sleep(0.2)  # ~30 fps
+        time.sleep(0.1)  # ~30 fps
    
 
 # -------------------- BACKGROUND THREAD --------------------
