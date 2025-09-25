@@ -10,14 +10,21 @@ import dns from "dns"
 dns.setDefaultResultOrder('ipv4first');
 dotenv.config();
 
+const connectionUrl = new URL(process.env.SUPABASE_CONNECTION_STRING);
+
 const db = new pg.Client({
-  connectionString: process.env.SUPABASE_CONNECTION_STRING, // from Supabase dashboard
-  ssl: { rejectUnauthorized: false },  // required for Supabase
-  options: {
-    family: 4
-  }
+  host: connectionUrl.hostname,
+  port: connectionUrl.port || 5432,
+  database: connectionUrl.pathname.slice(1), // Remove leading slash
+  user: connectionUrl.username,
+  password: connectionUrl.password,
+  ssl: { rejectUnauthorized: false },
+  family: 4  // This forces IPv4 - moved to root level
 });
-db.connect();
+
+db.connect().catch(err => {
+  console.error('Database connection error:', err);
+});
 
 
 
