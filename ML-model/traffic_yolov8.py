@@ -93,14 +93,14 @@ def generate_frames_and_counts():
         _, buffer = cv2.imencode('.jpg', frame)
         latest_frame = buffer.tobytes()
 
-        
+        time.sleep(0.06)
 
 def video_stream_generator():
     while True:
         if latest_frame:  # only send if we already have a frame
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + latest_frame + b'\r\n')
-        time.sleep(0.06)  # ~30 fps
+        time.sleep(0.2)  # ~30 fps
    
 
 # -------------------- BACKGROUND THREAD --------------------
