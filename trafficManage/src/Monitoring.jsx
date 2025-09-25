@@ -1,5 +1,5 @@
 import React,{ useState} from 'react';
-import Sidebar from './components/sideBar';
+import Sidebar from './components/SideBar';
 import Header from './components/Header';
 import { useEffect } from 'react';
 const Monitoring = () => {

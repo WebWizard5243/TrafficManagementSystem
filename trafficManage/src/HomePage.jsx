@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from './components/Header'
-import Sidebar from './components/sideBar'
+import Sidebar from './components/SideBar'
 import Alerts from './components/Alerts'
 import Resource from './components/Resource'
 export default function HomePage() {
