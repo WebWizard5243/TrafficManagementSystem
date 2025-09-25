@@ -112,7 +112,7 @@ app.post("/login", async (req, res) => {
 
 app.get("/detect", async (req, res) => {
   try {
-    const response = await axios.get("https://trafficmanagementsystem-95du.onrender.com/vehicle_counts");
+    const response = await axios.get("https://monitoring-python-892386181347.asia-south1.run.app/vehicle_counts");
     const data = response.data; // no .json() needed
     res.json(data); // send to frontend
   } catch (err) {
@@ -122,9 +122,6 @@ app.get("/detect", async (req, res) => {
 });
 
 
-app.get("/video_stream", (req, res) => {
-  res.redirect("https://trafficmanagementsystem-95du.onrender.com/video_stream");
-});
 
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
