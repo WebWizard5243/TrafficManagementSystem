@@ -10,7 +10,7 @@ export default function Signup() {
 
   const handleSignup = async(name, email, password) => {
     try {
-      const response = await fetch('http://localhost:3000/signup', {
+      const response = await fetch('https://trafficmanagementsystem-r31f.onrender.com/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
