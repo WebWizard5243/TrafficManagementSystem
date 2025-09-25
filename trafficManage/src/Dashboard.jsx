@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Header from './components/Header'
-import Sidebar from './components/sideBar'
+import Sidebar from './components/SideBar'
 import Map from './components/Map';
 import Alerts from './components/Alerts';
 export default function Dashboard() {
