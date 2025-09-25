@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "NODE_OPTIONS=--dns-result-order=ipv4first node server.js"
+
+
   },
   "keywords": [],
   "author": "",
