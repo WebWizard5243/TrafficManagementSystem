@@ -5,11 +5,17 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pg from "pg"
+import dns from "dns"
+
+dns.setDefaultResultOrder('ipv4first');
 dotenv.config();
 
 const db = new pg.Client({
   connectionString: process.env.SUPABASE_CONNECTION_STRING, // from Supabase dashboard
-  ssl: { rejectUnauthorized: false }  // required for Supabase
+  ssl: { rejectUnauthorized: false },  // required for Supabase
+  options: {
+    family: 4
+  }
 });
 db.connect();
 
