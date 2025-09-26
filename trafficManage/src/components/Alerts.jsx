@@ -48,7 +48,7 @@ import React, { useEffect, useState, memo } from 'react'
         const fetchAlerts = async(e) => {
             try {
                  setLoading(true);
-                const res = await fetch("http://localhost:3000/alerts");
+                const res = await fetch("https://trafficmanagementsystem-r31f.onrender.com/alerts");
                 const data = await res.json();
                 setAlerts(data);
             } catch (error) {

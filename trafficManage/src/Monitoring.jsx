@@ -11,7 +11,7 @@ const latest16 = [...counts].reverse().find(item => item.second % 1 === 0);
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("https://trafficmanagementsystem-r31f.onrender.com/detect");
+        const res = await fetch("https://monitoring-python-892386181347.asia-south1.run.app/vehicle_counts");
         const data = await res.json();
         setCounts(data);
       } catch (error) {
@@ -35,7 +35,7 @@ const latest16 = [...counts].reverse().find(item => item.second % 1 === 0);
           {/* Map Section */}
           <div className="col-span-2 row-span-1 rounded-xl p-4">
               <div className="bg-slate-300 rounded-lg aspect-video flex items-center justify-center">
-                <span className="text-4xl font-bold text-slate-800"><img  className='w-full h-full object-contain' src="https://monitoring-python-892386181347.asia-south1.run.app/video_stream"></img></span>
+                <span className="text-4xl font-bold text-slate-800"><img className='w-full h-full object-contain' src="https://monitoring-python-892386181347.asia-south1.run.app/video_stream"></img></span>
               </div>
             </div>
 
