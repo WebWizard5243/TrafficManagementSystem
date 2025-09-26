@@ -40,9 +40,9 @@ const latest16 = [...counts].reverse().find(item => item.second % 1 === 0);
             </div>
 
           {/* Signal Control */}
-           <div className="bg-[#0B1E56] rounded-xl p-6">
+           <div className="bg-[#0B1E56] rounded-xl p-8">
               <h3 className="text-2xl font-bold mb-6 text-center">SIGNAL</h3>
-              <div className="grid grid-cols-1 gap-8">
+              <div className="flex flex-col justify-evenly h-full pb-6 ">
                 <button className="bg-red-500 hover:bg-red-600 px-6 py-4 rounded-lg font-bold transition-all transform hover:scale-105">
                   RED
                 </button>
