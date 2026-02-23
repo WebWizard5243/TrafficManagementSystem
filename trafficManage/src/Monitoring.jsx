@@ -43,7 +43,7 @@ const Monitoring = () => {
               <span className="text-4xl font-bold text-slate-800">
                 <img
                   className="w-full h-full object-contain"
-                  src="https://monitoring-python-892386181347.asia-south1.run.app/video_stream"
+                  src="http://127.0.0.1:8000/video_stream"
                   onLoad={() => setLoading(false)}
                   onError={() => setLoading(false)}
                 ></img>

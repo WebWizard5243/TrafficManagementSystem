@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 import threading
 
-# -------------------- CONFIG --------------------
+# CONFIG
 VIDEO_FILENAME = "traffic_video4.mp4"
 vehicle_classes = [2, 3, 5, 7]  # car, motorcycle, bus, truck
 MAX_EXPECTED_VEHICLES = 22
@@ -18,7 +18,7 @@ STREAM_FPS = 15       # streaming FPS
 JPEG_QUALITY = 60     # JPEG quality for encoding
 QUEUE_MAXSIZE = 5     # max frames in queue
 
-# -------------------- APP --------------------
+# APP
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -27,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------- LOAD MODEL & VIDEO --------------------
+# LOAD MODEL & VIDEO
 model = YOLO("yolov8n.pt")
 model.fuse()  # fuse model for faster inference
 
@@ -46,20 +46,20 @@ print(f"Video FPS: {fps}, Resolution: {original_width}x{original_height}")
 PROCESS_WIDTH = 640
 PROCESS_HEIGHT = int(PROCESS_WIDTH * original_height / original_width)
 
-# -------------------- GLOBALS FOR VEHICLE COUNTING --------------------
+# GLOBALS FOR VEHICLE COUNTING
 counts_json = []
 current_second_counts = []
 total_30s_count = 0
 seconds_elapsed = 0
 frame_number = 0
 
-# -------------------- QUEUES & THREADPOOL --------------------
+# QUEUES & THREADPOOL
 frame_queue = Queue(maxsize=QUEUE_MAXSIZE)
 executor = ThreadPoolExecutor(max_workers=2)
 
 latest_frame_bytes = None
 
-# -------------------- FUNCTIONS --------------------
+# FUNCTIONS 
 def process_frame_for_detection(frame, current_frame_number):
     """Runs YOLO detection on a frame"""
     global current_second_counts, counts_json, total_30s_count, seconds_elapsed
@@ -162,11 +162,11 @@ def video_stream_generator():
                    b'Content-Type: image/jpeg\r\n\r\n' + latest_frame_bytes + b'\r\n')
         time.sleep(delay)
 
-# -------------------- START BACKGROUND THREADS --------------------
+#START BACKGROUND THREADS
 threading.Thread(target=frame_reader, daemon=True).start()
 threading.Thread(target=frame_processor, daemon=True).start()
 
-# -------------------- ENDPOINTS --------------------
+# ENDPOINTS
 @app.get("/video_stream")
 def video_stream():
     return StreamingResponse(
@@ -188,7 +188,7 @@ def health_check():
         "total_counts_recorded": len(counts_json)
     }
 
-# -------------------- STARTUP/SHUTDOWN --------------------
+# STARTUP/SHUTDOWN
 @app.on_event("shutdown")
 async def shutdown_event():
     cap.release()

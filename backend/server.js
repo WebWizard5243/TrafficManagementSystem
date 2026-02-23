@@ -13,7 +13,7 @@ dotenv.config();
 const { Pool } = pg;
 
 const db = new Pool({
-  connectionString: process.env.SUPABASE_CONNECTION_STRING,
+  connectionString: process.env.NEONBASE_CONNECTION_STRING,
   ssl: { 
     rejectUnauthorized: false 
   },
@@ -130,7 +130,7 @@ app.post("/login", async (req, res) => {
 
 app.get("/detect", async (req, res) => {
   try {
-    const response = await axios.get("https://monitoring-python-892386181347.asia-south1.run.app/vehicle_counts");
+    const response = await axios.get("http://127.0.0.1:8000/vehicle_counts");
     const data = response.data; // no .json() needed
     res.json(data); // send to frontend
   } catch (err) {
