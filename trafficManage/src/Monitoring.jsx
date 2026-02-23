@@ -12,7 +12,7 @@ const Monitoring = () => {
       
       try {
         const res = await fetch(
-          "https://monitoring-python-892386181347.asia-south1.run.app/vehicle_counts"
+          "http://127.0.0.1:8000/vehicle_counts"
         );
         const data = await res.json();
         setCounts(data);
