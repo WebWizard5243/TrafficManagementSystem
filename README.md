@@ -25,4 +25,24 @@ This comprehensive traffic management system combines real-time video analysis, 
 - **Historical Data Analysis**: Track traffic patterns over time
 - **Alert System**: Automatic notifications for traffic anomalies
 
+### Setting The Python Server 
+**Note :- make sure to setup the python server before visiting the website for monitoring and vehicle counts**
+
+### Clone repo and move to backend
+git clone https://github.com/your-username/smart-traffic-management-system.git
+cd smart-traffic-management-system/backend
+
+### Create virtual environment
+`python -m venv venv`
+ #### macOS/Linux
+`source venv/bin/activate `
+ #### Windows
+`venv\Scripts\activate `   
+
+### Install dependencies
+`pip install fastapi uvicorn ultralytics opencv-python numpy`
+
+### Run The Backend Server
+`python3 -m uvicorn traffic_yolov8:app --host 127.0.0.1 --port 8000  `
+
 **Website**:- https://traffic-management-system-one.vercel.app/login
