@@ -25,7 +25,7 @@ This comprehensive traffic management system combines real-time video analysis, 
 - **Historical Data Analysis**: Track traffic patterns over time
 - **Alert System**: Automatic notifications for traffic anomalies
 ---
-### Setting The Python Server 
+## Setting Up The Python Server 
 **Note :- make sure to setup the python server before visiting the website for monitoring and vehicle counts**
 
 ### Clone repo and move to backend
