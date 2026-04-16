@@ -1,173 +1,237 @@
-import React, { useEffect, useRef, useState } from "react";
-import { GoogleMap, TrafficLayer, Marker } from "@react-google-maps/api";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-const center = { lat: 20.2960, lng: 85.8246 };
-const mapContainerStyle = { width: "100%", height: "100%" };
+const TOMTOM_KEY = import.meta.env.VITE_TOM_TOM_API_KEY;
+const center = [20.296, 85.8246];
+const MIN_ZOOM_FOR_SIGNALS = 13;
+const MAX_SIGNALS = 500;
 
-// Configuration
-const MIN_ZOOM_FOR_SIGNALS = 13; // Only show signals when zoomed in enough
-const MAX_SIGNALS = 500; // Limit maximum number of signals to show
+// Signal marker icon
+const signalIcon = L.divIcon({
+  className: "",
+  html: `<div style="
+    width: 12px; height: 12px;
+    background: #DB4437;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  "></div>`,
+  iconSize: [12, 12],
+  iconAnchor: [6, 6],
+});
 
-export default function Map({ data }) {
-  const mapRef = useRef(null);
-  const navigate = useNavigate();
-  
-  const [signals, setSignals] = useState([]);
-  const [currentZoom, setCurrentZoom] = useState(13);
-  const [loading, setLoading] = useState(false);
+// Component to handle map events + traffic layer
+function MapController({ onBoundsChange, searchQuery, setBbox }) {
+  const map = useMap();
+  const debounceTimer = useRef(null);
 
-  const handleLoad = (map) => {
-    mapRef.current = map;
-    setCurrentZoom(map.getZoom());
-  };
-
-  // Fetch signals for any given bounds with limits
-  const fetchSignalsForBounds = async (bounds, zoom) => {
-    // Don't load signals if zoomed out too much
-    if (zoom < MIN_ZOOM_FOR_SIGNALS) {
-      console.log("Zoom level too low, not loading signals");
-      setSignals([]);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      console.log("Fetching signals for bounds at zoom level:", zoom);
-      
-      const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node["highway"="traffic_signals"](${bounds.south},${bounds.west},${bounds.north},${bounds.east});out;`;
-      const res = await fetch(overpassUrl);
-      const data = await res.json();
-      
-      let signals = data.elements || [];
-      
-      // Limit the number of signals to prevent lag
-      if (signals.length > MAX_SIGNALS) {
-        console.log(`Too many signals (${signals.length}), limiting to ${MAX_SIGNALS}`);
-        signals = signals.slice(0, MAX_SIGNALS);
-      }
-      
-      setSignals(signals);
-      console.log("Loaded", signals.length, "traffic signals");
-    } catch (error) {
-      console.error("Error fetching traffic signals:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle when map stops moving
-  const handleMapIdle = () => {
-    if (mapRef.current) {
-      const zoom = mapRef.current.getZoom();
-      setCurrentZoom(zoom);
-      
-      const b = mapRef.current.getBounds();
-      if (b) {
-        const ne = b.getNorthEast();
-        const sw = b.getSouthWest();
-        const bounds = {
-          north: ne.lat(),
-          east: ne.lng(),
-          south: sw.lat(),
-          west: sw.lng(),
-        };
-        
-        fetchSignalsForBounds(bounds, zoom);
-      }
-    }
-  };
-
-  // Handle search
   useEffect(() => {
-    async function searchPlace() {
-      if (!data || !mapRef.current) return;
-      if (!window.google || !window.google.maps) return;
+    const trafficLayer = L.tileLayer(
+      `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${TOMTOM_KEY}`,
+      { opacity: 0.8, zIndex: 10 },
+    );
+    trafficLayer.addTo(map);
+    return () => map.removeLayer(trafficLayer);
+  }, [map]);
 
+  useEffect(() => {
+    const handleMoveEnd = () => {
+      // Clear previous timer on every move
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+      // Only fire after user stops moving for 1 second
+      debounceTimer.current = setTimeout(() => {
+        const zoom = map.getZoom();
+        const bounds = map.getBounds();
+        if (bounds) {
+          const bbox = {
+            minLon: Number(bounds.getWest().toFixed(2)),
+            minLat: Number(bounds.getSouth().toFixed(2)),
+            maxLon: Number(bounds.getEast().toFixed(2)),
+            maxLat: Number(bounds.getNorth().toFixed(2)),
+          };
+
+          onBoundsChange({
+            north: bounds.getNorth(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            west: bounds.getWest(),
+            zoom,
+          });
+
+          setBbox(bbox);
+        }
+      }, 2500); // 1 second delay
+    };
+
+    map.on("moveend", handleMoveEnd);
+    return () => {
+      map.off("moveend", handleMoveEnd);
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [map, onBoundsChange]);
+
+  useEffect(() => {
+    if (!searchQuery) return;
+    const search = async () => {
       try {
-        const { Place } = await window.google.maps.importLibrary("places");
-
-        const request = {
-          textQuery: data,
-          fields: ["displayName", "location"],
-        };
-
-        const result = await Place.searchByText(request);
-
-        if (result?.places?.length > 0) {
-          const place = result.places[0];
-          if (place.location) {
-            mapRef.current.panTo(place.location);
-            mapRef.current.setZoom(16); // Zoom in enough to show signals
-          }
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=1`,
+          { headers: { "Accept-Language": "en" } },
+        );
+        const results = await res.json();
+        if (results.length > 0) {
+          const { lat, lon } = results[0];
+          map.setView([parseFloat(lat), parseFloat(lon)], 16);
         }
       } catch (err) {
-        console.error("Error in Place.searchByText:", err);
+        console.error("Search error:", err);
       }
-    }
+    };
+    search();
+  }, [searchQuery, map]);
 
-    searchPlace();
-  }, [data]);
+  return null;
+}
 
+export default function Map({ data, alert }) {
+  const navigate = useNavigate();
+  const [signals, setSignals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [zoom, setZoom] = useState(13);
+  const [loadingMessage, setLoadingMessage] = useState("");
+
+  const signalCache = useRef({}); // cache results by area
+
+  const handleBoundsChange = useCallback(
+    async ({ north, south, east, west, zoom }) => {
+      setZoom(zoom);
+      if (zoom < MIN_ZOOM_FOR_SIGNALS) {
+        setSignals([]);
+        return;
+      }
+
+      const key = `${south.toFixed(2)},${west.toFixed(2)},${north.toFixed(2)},${east.toFixed(2)}`;
+      if (signalCache.current[key]) {
+        setSignals(signalCache.current[key]);
+        return;
+      }
+
+      try {
+        setLoadingMessage("");
+        setLoading(true);
+        const res = await fetch(
+          `https://overpass-api.de/api/interpreter?data=[out:json];node["highway"="traffic_signals"](${south},${west},${north},${east});out;`,
+        );
+        const json = await res.json();
+        let fetched = json.elements || [];
+        if (fetched.length > MAX_SIGNALS)
+          fetched = fetched.slice(0, MAX_SIGNALS);
+        signalCache.current[key] = fetched;
+
+        setSignals(fetched);
+      } catch (err) {
+        console.error("Error fetching signals:", err);
+        setSignals([]);
+        setLoadingMessage(
+          "Traffic signal server is busy, try again in a moment.",
+        );
+        setTimeout(() => setLoadingMessage(""), 10000);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <MapContainer
         center={center}
         zoom={13}
-        onLoad={handleLoad}
-        onIdle={handleMapIdle}
-        options={{
-          mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID,
-        }}
+        style={{ width: "100%", height: "100%" }}
+        zoomControl={true}
       >
+        {/* TomTom Base Map */}
+        <TileLayer
+          url={`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${TOMTOM_KEY}`}
+          attribution="&copy; TomTom"
+          maxZoom={22}
+        />
+
+        <MapController
+          onBoundsChange={handleBoundsChange}
+          searchQuery={data}
+          setBbox={alert}
+        />
+
+        {/* Traffic Signal Markers */}
         {signals.map((s) => (
           <Marker
             key={s.id}
-            position={{ lat: s.lat, lng: s.lon }}
-            icon={{
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 6,
-              fillColor: "#DB4437",
-              fillOpacity: 1,
-              strokeWeight: 1,
+            position={[s.lat, s.lon]}
+            icon={signalIcon}
+            eventHandlers={{
+              click: () => navigate("/Monitoring"),
             }}
-            onClick={() => {
-              navigate("/Monitoring");
-            }}
-          />
+          >
+            <Popup>Traffic Signal</Popup>
+          </Marker>
         ))}
+      </MapContainer>
 
-        <TrafficLayer autoUpdate />
-      </GoogleMap>
-
-      {/* Show status messages */}
+      {/* Status overlays */}
       {loading && (
-        <div style={{
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          background: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '4px',
-          fontSize: '12px'
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 999,
+            background: "rgba(0,0,0,0.7)",
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
           Loading signals...
         </div>
       )}
+      {loadingMessage && (
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 999,
+            background: "rgba(0,0,0,0.7)",
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
+          {loadingMessage}
+        </div>
+      )}
 
-      {currentZoom < MIN_ZOOM_FOR_SIGNALS && (
-        <div style={{
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          background: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '4px',
-          fontSize: '12px'
-        }}>
+      {zoom < MIN_ZOOM_FOR_SIGNALS && (
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 999,
+            background: "rgba(0,0,0,0.7)",
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
           Zoom in to see traffic signals
         </div>
       )}

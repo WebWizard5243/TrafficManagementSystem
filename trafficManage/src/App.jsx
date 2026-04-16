@@ -8,7 +8,7 @@ import Signup from './Signup';
 import ProtectedRoute from './middleware/ProtectedRoute';
 export default function App() {
   return (
-    <div className='app'>
+    <div className='app' style={{ height: "100vh" }}>
        <div className={location.pathname === "/monitoring" ? "block" : "hidden"}>
         <video
           id="monitor-player"
