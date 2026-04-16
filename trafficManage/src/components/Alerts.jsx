@@ -4,7 +4,7 @@ const Alerts = memo(({ location: search, bbox }) => {
     const [alerts, setAlerts] = useState([]);
     const [locations, setLocations] = useState({});
     const [loading, setLoading] = useState(false);
-    const url = "http://localhost:3000/alerts" || "https://trafficmanagementsystem-r31f.onrender.com/alerts";
+    const url = "https://trafficmanagementsystem-r31f.onrender.com/alerts" || "http://localhost:3000/alerts";
     const truncateLocation = (location, method = 'characters') => {
         if (!location || location === 'Loading location...') return location;
         
