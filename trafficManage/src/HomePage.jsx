@@ -1,11 +1,16 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Header from './components/Header'
 import Sidebar from './components/SideBar'
 import Alerts from './components/Alerts'
 import Resource from './components/Resource'
 export default function HomePage() {
   const userName = sessionStorage.getItem("name") || "Guest";
-
+  const bbox = {
+    minLon: 85.75,
+    minLat: 20.25,
+    maxLon: 85.9,
+    maxLat: 20.35,
+  }
   
   return (
     <div className='flex items-center h-screen gap-20 pr-10'>
@@ -28,7 +33,7 @@ export default function HomePage() {
           <div className="col-span-7 bg-[#0B1E56] rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6">ALERTS</h2>
             <div className="space-y-3">
-              <Alerts />
+              <Alerts bbox = {bbox} />
             </div>
           </div>
           {/* Contact Details */}
